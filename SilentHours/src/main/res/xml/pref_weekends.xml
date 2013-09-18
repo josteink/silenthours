@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="weekends_hours_start"
+        android:title="@string/pref_title_hour_start"
+        android:defaultValue="23"
+        android:entries="@array/pref_hours_titles"
+        android:entryValues="@array/pref_hours_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="weekends_minutes_start"
+        android:title="@string/pref_title_hour_stop"
+        android:defaultValue="0"
+        android:entries="@array/pref_minutes_titles"
+        android:entryValues="@array/pref_minutes_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="weekends_hours_stop"
+        android:title="@string/pref_title_hour_start"
+        android:defaultValue="10"
+        android:entries="@array/pref_hours_titles"
+        android:entryValues="@array/pref_hours_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="weekends_minutes_stop"
+        android:title="@string/pref_title_hour_stop"
+        android:defaultValue="0"
+        android:entries="@array/pref_minutes_titles"
+        android:entryValues="@array/pref_minutes_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+</PreferenceScreen>

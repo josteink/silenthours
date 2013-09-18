@@ -1,0 +1,17 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="net.kjonigsen.silenthours.SettingsActivity$GeneralPreferenceFragment"
+        android:title="@string/pref_header_general" />
+
+    <header
+        android:fragment="net.kjonigsen.silenthours.SettingsActivity$WeekdaysPreferenceFragment"
+        android:title="@string/pref_header_weekdays" />
+
+    <header
+        android:fragment="net.kjonigsen.silenthours.SettingsActivity$WeekendsPreferenceFragment"
+        android:title="@string/pref_header_weekends" />
+
+</preference-headers>

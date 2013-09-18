@@ -1,0 +1,102 @@
+<resources>
+        <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_enable_service">Enable service</string>
+    <string name="pref_description_enable_service">Enables the Silent Hours service.</string>
+
+    <!-- <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string> -->
+
+    <string name="pref_title_operation_mode">Operation mode</string>
+    <string-array name="pref_operation_mode_titles">
+        <item>All days are weekdays</item>
+        <item>Weekdays and weekends</item>
+        <item>Vacation / Always weekend</item>
+    </string-array>
+    <string-array name="pref_operation_mode_values">
+        <item>-1</item>
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string name="pref_header_weekdays">Weekdays</string>
+    <string name="pref_header_weekends">Weekends</string>
+
+    <string name="pref_title_hour_start">Start-hour</string>
+    <string name="pref_title_hour_stop">Stop-hour</string>
+
+    <string-array name="pref_hours_titles">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+    </string-array>
+    <string-array name="pref_hours_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+    </string-array>
+
+    <string name="pref_title_minutes_start">Start-minute</string>
+    <string name="pref_title_minutes_stop">Stop-minute</string>
+
+    <string-array name="pref_minutes_titles">
+        <item>0</item>
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+    </string-array>
+    <string-array name="pref_minutes_values">
+        <item>0</item>
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+    </string-array>
+
+</resources>
