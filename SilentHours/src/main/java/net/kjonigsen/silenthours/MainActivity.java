@@ -1,5 +1,6 @@
 package net.kjonigsen.silenthours;
 
+import android.app.Service;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -25,6 +26,9 @@ public class MainActivity extends Activity {
     private void updateFromConfig()
     {
         ApplicationStatus status = ApplicationStatusProvider.getFor(this);
+
+        ServiceManager.startStopService(this);
+
         updateFromStatus(status);
     }
 
@@ -32,6 +36,7 @@ public class MainActivity extends Activity {
     {
         setText(R.id.text_service_status, getEnabled(status.ServiceEnabled));
         setText(R.id.text_silent_status, getEnabled(status.SilentHoursEnabled));
+        setText(R.id.text_next_event, status.NextApplicationEvent.toString());
     }
 
     private String getEnabled(boolean enabled)

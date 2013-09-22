@@ -40,17 +40,11 @@ public class LocalService extends Service {
         nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         am = (AlarmManager)getSystemService(ALARM_SERVICE);
 
-        // TODO: DO SOMETHING EASILY TESTED :)
-
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pending = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Date futureDate = new Date();
-        futureDate.setHours(21);
-        futureDate.setMinutes(47);
-        futureDate.setSeconds(0);
-        long millis = futureDate.getTime();
-
+        ApplicationStatus status = ApplicationStatusProvider.getFor(this);
+        long millis = status.NextApplicationEvent.getTime();
         am.set(AlarmManager.RTC_WAKEUP, millis, pending);
 
         // Display a notification about us starting.  We put an icon in the status bar.
@@ -62,7 +56,7 @@ public class LocalService extends Service {
         Log.i("LocalService", "Received start id " + startId + ": " + intent);
 
         // We want this service to continue running until it is explicitly
-            // stopped, so return sticky.
+        // stopped, so return sticky.
         return START_STICKY;
     }
 

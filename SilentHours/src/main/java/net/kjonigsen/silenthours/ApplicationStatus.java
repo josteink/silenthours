@@ -9,4 +9,5 @@ public class ApplicationStatus {
 
     public boolean ServiceEnabled;
     public boolean SilentHoursEnabled;
+    public Date NextApplicationEvent;
 }
