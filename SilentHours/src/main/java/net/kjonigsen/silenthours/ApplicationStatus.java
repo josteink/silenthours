@@ -7,6 +7,22 @@ import java.util.Date;
  */
 public class ApplicationStatus {
 
-    public boolean SilentHoursEnabled;
+    public boolean ServiceEnabled;
+    public int CurrentProfile;
     public Date NextApplicationEvent;
+
+    public String getCurrentProfileName()
+    {
+        switch (CurrentProfile)
+        {
+            case ApplicationPreferences.OM_AllDaysWeekdays:
+                return "All days weekdays.";
+
+            case ApplicationPreferences.OM_AllDaysWeekends:
+                return "All days weekends.";
+
+            default:
+                return "Weekdays and weekends.";
+        }
+    }
 }

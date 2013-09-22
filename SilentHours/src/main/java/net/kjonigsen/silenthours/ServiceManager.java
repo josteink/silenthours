@@ -24,14 +24,9 @@ public class ServiceManager {
         }
     }
 
-    public static void stopService(Context context) {
-        Intent serviceIntent = new Intent(context, LocalService.class);
-        context.stopService(serviceIntent);
-    }
-
     private static Boolean getEnabled(Context context)
     {
-        String pref = "pref_force_landscape";
+        String pref = "enable_service";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(pref, true);
     }

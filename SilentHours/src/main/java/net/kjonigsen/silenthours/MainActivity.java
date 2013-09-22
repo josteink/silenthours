@@ -25,8 +25,13 @@ public class MainActivity extends Activity {
     private void updateFromConfig()
     {
         ApplicationStatus status = ApplicationStatusProvider.getFor(this);
+        updateFromStatus(status);
+    }
 
-        setText(R.id.text_service_status, new Boolean(status.SilentHoursEnabled).toString());
+    private void updateFromStatus(ApplicationStatus status)
+    {
+        setText(R.id.text_service_status, new Boolean(status.ServiceEnabled).toString());
+        setText(R.id.text_profile_status, status.getCurrentProfileName());
         setText(R.id.text_application_event, status.NextApplicationEvent.toString());
     }
 
