@@ -16,12 +16,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        int i = 0;
-
-        // GETS CALLED! WHEE!
-        AudioManager x = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        x.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-        int originalMode = x.getRingerMode();
-
+        ServiceManager.startStopService(context);
     }
 }

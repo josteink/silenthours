@@ -94,12 +94,14 @@ public class ApplicationStatusProvider {
 
     private static ApplicationStatus getForOvernight(Date start, Date end)
     {
+        // pre midnight in the future as per today
         Date now = new Date();
         Date preMidnight = new Date();
         preMidnight.setHours(23);
         preMidnight.setMinutes(59);
         preMidnight.setSeconds(59);
 
+        // midnight in the past as per today
         Date midnight = new Date();
         midnight.setHours(0);
         midnight.setMinutes(0);
@@ -113,10 +115,15 @@ public class ApplicationStatusProvider {
                 && now.getTime() < preMidnight.getTime());
         if (enabledDay1)
         {
+            // we dont know if tomorrow is weekend.
+            // just force status update at (future) midnight when a new day is already here.
             long oneDay = 24 * 60 * 60 * 1000L;
-            Date endTomorrow = new Date();
-            endTomorrow.setTime(end.getTime() + oneDay);
-            nextDate = endTomorrow;
+            Date futureMidnight = new Date();
+            futureMidnight.setHours(0);
+            futureMidnight.setMinutes(0);
+            futureMidnight.setSeconds(0);
+            futureMidnight.setTime(futureMidnight.getTime() + oneDay);
+            nextDate = futureMidnight;
         }
 
         boolean enabledDay2 =

@@ -5,7 +5,9 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -19,6 +21,10 @@ import java.util.Date;
 public class LocalService extends Service {
     private NotificationManager nm;
     private AlarmManager am;
+    private AudioManager aum;
+
+    private int originalMode;
+    private boolean enabledState;
 
     // Unique Identification Number for the Notification.
     // We use it on Notification start, and to cancel it.
@@ -39,21 +45,35 @@ public class LocalService extends Service {
     public void onCreate() {
         nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         am = (AlarmManager)getSystemService(ALARM_SERVICE);
-
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pending = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        ApplicationStatus status = ApplicationStatusProvider.getFor(this);
-        long millis = status.NextApplicationEvent.getTime();
-        am.set(AlarmManager.RTC_WAKEUP, millis, pending);
-
-        // Display a notification about us starting.  We put an icon in the status bar.
-        showNotification();
+        aum = (AudioManager)getSystemService(AUDIO_SERVICE);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("LocalService", "Received start id " + startId + ": " + intent);
+
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pending = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        ApplicationStatus status = ApplicationStatusProvider.getFor(this);
+        long millis = status.NextApplicationEvent.getTime();
+        am.set(AlarmManager.RTC_WAKEUP, millis, pending);
+
+        if (status.SilentHoursEnabled && !enabledState)
+        {
+            // enable
+            originalMode = aum.getRingerMode();
+            aum.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+            enabledState = true;
+            showNotification();
+        }
+        else if (!status.SilentHoursEnabled && enabledState)
+        {
+            // disable
+            aum.setRingerMode(originalMode);
+            enabledState = false;
+            nm.cancel(NOTIFICATION);
+        }
 
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
