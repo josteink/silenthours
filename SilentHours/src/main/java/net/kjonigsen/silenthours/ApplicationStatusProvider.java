@@ -2,6 +2,7 @@ package net.kjonigsen.silenthours;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import java.util.Date;
 
@@ -16,7 +17,7 @@ public class ApplicationStatusProvider {
 
     public static ApplicationStatus getFor(Context context)
     {
-        SharedPreferences prefs = context.getSharedPreferences("silentHours", context.MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         boolean enableService = prefs.getBoolean("enable_service", true);
         Date nextDate = getNextApplicationEventDateFor(context);
@@ -31,7 +32,7 @@ public class ApplicationStatusProvider {
     private static Date getNextApplicationEventDateFor(Context context)
     {
         Date result = new Date();
-        result.setTime(result .getTime() + 1);
+        result.setTime(result.getTime() + 1);
         return result;
     }
 

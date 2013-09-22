@@ -1,6 +1,7 @@
 package net.kjonigsen.silenthours;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -13,7 +14,16 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
 
+    @Override
+    protected void onResume() {
+        updateFromConfig();
+        super.onResume();
+    }
+
+    private void updateFromConfig()
+    {
         ApplicationStatus status = ApplicationStatusProvider.getFor(this);
 
         setText(R.id.text_service_status, new Boolean(status.SilentHoursEnabled).toString());
