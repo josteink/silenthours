@@ -32,30 +32,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current profile:" />
+            android:text="Silent hours status:" />
 
         <TextView
-            android:id="@+id/text_profile_status"
+            android:id="@+id/text_silent_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--set in code--" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Next application event:" />
-
-        <TextView
-            android:id="@+id/text_application_event"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="--set in code--" />
-
     </LinearLayout>
 
 </RelativeLayout>

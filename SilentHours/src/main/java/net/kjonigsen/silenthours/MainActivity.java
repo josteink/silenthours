@@ -30,9 +30,20 @@ public class MainActivity extends Activity {
 
     private void updateFromStatus(ApplicationStatus status)
     {
-        setText(R.id.text_service_status, new Boolean(status.ServiceEnabled).toString());
-        setText(R.id.text_profile_status, status.getCurrentProfileName());
-        setText(R.id.text_application_event, status.NextApplicationEvent.toString());
+        setText(R.id.text_service_status, getEnabled(status.ServiceEnabled));
+        setText(R.id.text_silent_status, getEnabled(status.SilentHoursEnabled));
+    }
+
+    private String getEnabled(boolean enabled)
+    {
+        if (enabled)
+        {
+            return "Enabled";
+        }
+        else
+        {
+            return "Inactive";
+        }
     }
 
     private void setText(int control, String value)

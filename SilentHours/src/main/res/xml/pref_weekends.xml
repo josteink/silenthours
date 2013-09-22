@@ -13,7 +13,7 @@
 
     <ListPreference
         android:key="weekends_minutes_start"
-        android:title="@string/pref_title_hour_stop"
+        android:title="@string/pref_title_minutes_start"
         android:defaultValue="0"
         android:entries="@array/pref_minutes_titles"
         android:entryValues="@array/pref_minutes_values"
@@ -22,7 +22,7 @@
 
     <ListPreference
         android:key="weekends_hours_stop"
-        android:title="@string/pref_title_hour_start"
+        android:title="@string/pref_title_hour_stop"
         android:defaultValue="10"
         android:entries="@array/pref_hours_titles"
         android:entryValues="@array/pref_hours_values"
@@ -31,7 +31,7 @@
 
     <ListPreference
         android:key="weekends_minutes_stop"
-        android:title="@string/pref_title_hour_stop"
+        android:title="@string/pref_title_minutes_stop"
         android:defaultValue="0"
         android:entries="@array/pref_minutes_titles"
         android:entryValues="@array/pref_minutes_values"

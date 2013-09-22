@@ -19,65 +19,39 @@ public class ApplicationStatusProvider {
     {
         ApplicationPreferences prefs = ApplicationPreferencesProvider.getPreferencesFor(context);
 
-        Date nextDate = getNextApplicationEventDateFor(prefs);
+        boolean silentHoursEnabled = getEnabledStateFor(prefs);
 
         ApplicationStatus result = new ApplicationStatus();
         result.ServiceEnabled = prefs.ServiceEnabled;
-        result.NextApplicationEvent = nextDate;
+        result.SilentHoursEnabled = silentHoursEnabled;
 
         return result;
     }
 
-    private static Date getNextApplicationEventDateFor(ApplicationPreferences prefs)
+    private static boolean getEnabledStateFor(ApplicationPreferences prefs)
     {
         switch (prefs.OperationMode)
         {
             case ApplicationPreferences.OM_AllDaysWeekdays:
-                return getNextApplicationEventDateForWeekday(prefs);
+                return getEnabledStateForWeekday(prefs);
 
             case ApplicationPreferences.OM_AllDaysWeekends:
-                return getNextApplicationEventDateForWeekend(prefs);
+                return getEnabledStateForWeekend(prefs);
 
             default:
-                return getNextApplicationEventDateForCurrent(prefs);
+                return getEnabledStateForCurrent(prefs);
         }
     }
 
-    private static Date getNextApplicationEventDateForCurrent(ApplicationPreferences prefs)
+    private static boolean getEnabledStateForCurrent(ApplicationPreferences prefs)
     {
         if (isWeekday())
         {
-            return getNextApplicationEventDateForWeekday(prefs);
+            return getEnabledStateForWeekday(prefs);
         }
         else
         {
-            return getNextApplicationEventDateForWeekend(prefs);
-        }
-    }
-
-    private static Date getNextApplicationEventDateForWeekday(ApplicationPreferences prefs)
-    {
-        return getNextApplicationEventDateFor(prefs.WeekdayStartTime, prefs.WeekdayStopTime);
-    }
-
-    private static Date getNextApplicationEventDateForWeekend(ApplicationPreferences prefs)
-    {
-        return getNextApplicationEventDateFor(prefs.WeekendStartTime, prefs.WeekendStopTime);
-    }
-
-    private static Date getNextApplicationEventDateFor(Date start, Date end)
-    {
-        // identify which of these are in the future.
-
-        Date now = new Date();
-
-        if (now.getTime() > start.getTime())
-        {
-            return end;
-        }
-        else
-        {
-            return start;
+            return getEnabledStateForWeekend(prefs);
         }
     }
 
@@ -87,5 +61,60 @@ public class ApplicationStatusProvider {
         int dayOfWeek = now.getDay();
 
         return (dayOfWeek > 0) && (dayOfWeek < 6);
+    }
+
+    private static boolean getEnabledStateForWeekday(ApplicationPreferences prefs)
+    {
+        return getEnabledStateFor(prefs.WeekdayStartTime, prefs.WeekdayStopTime);
+    }
+
+    private static boolean getEnabledStateForWeekend(ApplicationPreferences prefs)
+    {
+        return getEnabledStateFor(prefs.WeekendStartTime, prefs.WeekendStopTime);
+    }
+
+    private static boolean getEnabledStateFor(Date start, Date end)
+    {
+        if (start.getTime() > end.getTime())
+        {
+            return getEnabledStateForOvernight(start, end);
+        }
+        else
+        {
+            return getEnabledStateForSameDay(start, end);
+        }
+    }
+
+    private static boolean getEnabledStateForOvernight(Date start, Date end)
+    {
+        Date now = new Date();
+        Date preMidnight = new Date();
+        preMidnight.setHours(23);
+        preMidnight.setMinutes(59);
+        preMidnight.setSeconds(59);
+
+        Date midnight = new Date();
+        midnight.setHours(0);
+        midnight.setMinutes(0);
+        midnight.setSeconds(0);
+
+        boolean enabledDay1 =
+                (now.getTime() > start.getTime()
+                && now.getTime() < preMidnight.getTime());
+
+        boolean enabledDay2 =
+                (now.getTime() > midnight.getTime()
+                && now.getTime() < end.getTime());
+
+        return enabledDay1 || enabledDay2;
+
+    }
+
+    private static boolean getEnabledStateForSameDay(Date start, Date end)
+    {
+        Date now = new Date();
+
+        return (now.getTime() > start.getTime()
+            && now.getTime() < end.getTime());
     }
 }

@@ -22,7 +22,7 @@
 
     <ListPreference
         android:key="weekdays_hours_stop"
-        android:title="@string/pref_title_hour_start"
+        android:title="@string/pref_title_hour_stop"
         android:defaultValue="7"
         android:entries="@array/pref_hours_titles"
         android:entryValues="@array/pref_hours_values"
