@@ -15,6 +15,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // initial reset may be needed on app start.
+        ActivationManager.resetStateFor(this);
     }
 
     @Override
@@ -26,9 +29,7 @@ public class MainActivity extends Activity {
     private void updateFromConfig()
     {
         ApplicationStatus status = ApplicationStatusProvider.getFor(this);
-
         ActivationManager.setStateFor(this);
-        //ServiceManager.startStopService(this);
 
         updateFromStatus(status);
     }

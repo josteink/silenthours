@@ -37,6 +37,12 @@ public class ActivationManager {
         }
     }
 
+    public static void resetStateFor(Context context)
+    {
+        ServiceStatus status = new ServiceStatus();
+        ServiceStatusProvider.setFor(context, status);
+    }
+
     public static void setStateFor(Context context)
     {
         InitializeFor(context);
@@ -102,7 +108,7 @@ public class ActivationManager {
         CharSequence text = context.getText(R.string.service_started);
 
         // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification(R.drawable.abc_ic_search, text,
+        Notification notification = new Notification(R.drawable.cat_head, text,
                 System.currentTimeMillis());
 
         // The PendingIntent to launch our activity if the user selects this notification

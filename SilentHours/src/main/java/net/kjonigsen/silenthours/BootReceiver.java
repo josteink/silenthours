@@ -14,6 +14,9 @@ public class BootReceiver extends BroadcastReceiver {
         // http://stackoverflow.com/questions/5051687/broadcastreceiver-not-receiving-boot-completed
         // What else can we receive? Checks docs.
 
+        // initial reset may be needed on app start.
+        ActivationManager.resetStateFor(context);
+
         ActivationManager.setStateFor(context);
         //ServiceManager.startStopService(context);
     }
