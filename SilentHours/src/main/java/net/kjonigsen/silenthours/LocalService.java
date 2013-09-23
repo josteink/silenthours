@@ -23,9 +23,6 @@ public class LocalService extends Service {
     private AlarmManager am;
     private AudioManager aum;
 
-    private int originalMode;
-    private boolean enabledState;
-
     // Unique Identification Number for the Notification.
     // We use it on Notification start, and to cancel it.
     private int NOTIFICATION = R.string.service_started;
@@ -59,20 +56,30 @@ public class LocalService extends Service {
         long millis = status.NextApplicationEvent.getTime();
         am.set(AlarmManager.RTC_WAKEUP, millis, pending);
 
-        if (status.SilentHoursEnabled && !enabledState)
+        ServiceStatus serviceStatus = ServiceStatusProvider.getFor(this);
+
+        boolean stateModified = false;
+        if (status.SilentHoursEnabled && !serviceStatus.SilentHoursEnabled)
         {
             // enable
-            originalMode = aum.getRingerMode();
+            serviceStatus.OriginalRingerMode = aum.getRingerMode();
             aum.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-            enabledState = true;
+            serviceStatus.SilentHoursEnabled = true;
             showNotification();
+            stateModified = true;
         }
-        else if (!status.SilentHoursEnabled && enabledState)
+        else if (!status.SilentHoursEnabled && serviceStatus.SilentHoursEnabled)
         {
             // disable
-            aum.setRingerMode(originalMode);
-            enabledState = false;
+            aum.setRingerMode(serviceStatus.OriginalRingerMode);
+            serviceStatus.SilentHoursEnabled = false;
             nm.cancel(NOTIFICATION);
+            stateModified = true;
+        }
+
+        if (stateModified)
+        {
+            ServiceStatusProvider.setFor(this, serviceStatus);
         }
 
         // We want this service to continue running until it is explicitly
