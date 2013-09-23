@@ -60,3 +60,6 @@ proguard_logs/
 .idea/
 
 adt-bundle-windows-x86_64/
+
+# emacs backups
+*~
