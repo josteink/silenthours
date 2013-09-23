@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="net.kjonigsen.silenthours.LocalService" />
+        <!-- <service android:name="net.kjonigsen.silenthours.LocalService" /> -->
 
         <receiver
             android:name="net.kjonigsen.silenthours.AlarmReceiver"

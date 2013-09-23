@@ -27,7 +27,8 @@ public class MainActivity extends Activity {
     {
         ApplicationStatus status = ApplicationStatusProvider.getFor(this);
 
-        ServiceManager.startStopService(this);
+        ActivationManager.setStateFor(this);
+        //ServiceManager.startStopService(this);
 
         updateFromStatus(status);
     }

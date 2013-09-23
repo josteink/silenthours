@@ -16,6 +16,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        ServiceManager.startStopService(context);
+        ActivationManager.setStateFor(context);
+        //ServiceManager.startStopService(context);
     }
 }

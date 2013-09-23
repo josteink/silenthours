@@ -3,10 +3,10 @@
 
     <string name="app_name">Silent Hours</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <!--<string name="hello_world">Hello world!</string>-->
 
-    <string name="service_started">Service started!!!</string>
-    <string name="service_stopped">Service stopped :(</string>
-    <string name="local_service_label">Silent hours service</string>
+    <string name="service_started">Silent hours enabled.</string>
+    <string name="service_stopped">Silent hours inactive.</string>
+    <string name="local_service_label">Silent hours</string>
 
 </resources>
