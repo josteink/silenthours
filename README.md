@@ -10,4 +10,4 @@ Installing from there is adviced compared to building the source for yourself.
 Points of improvement:
 
 * Option to toggle notification when active.
-
+* Make time-selector less horrible by using DialogFragment and TimePicker.
