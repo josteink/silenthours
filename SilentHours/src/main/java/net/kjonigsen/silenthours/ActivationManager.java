@@ -50,9 +50,10 @@ public class ActivationManager {
         ApplicationStatus applicationStatus = ApplicationStatusProvider.getFor(context);
         ServiceStatus serviceStatus = ServiceStatusProvider.getFor(context);
 
+        boolean alreadyQueued = applicationStatus.NextApplicationEvent.getTime() > serviceStatus.LastQueuedEvent.getTime();
+
         // only queue when enable and required.
-        if (applicationStatus.ServiceEnabled
-                && !applicationStatus.NextApplicationEvent.equals(serviceStatus.LastQueuedEvent)) {
+        if (applicationStatus.ServiceEnabled && !alreadyQueued) {
 
             // only queue new events if we are enabled.
             QueueNextAlarm(context, applicationStatus);
