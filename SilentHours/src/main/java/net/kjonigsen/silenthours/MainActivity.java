@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -16,8 +19,25 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setSettingsLink();
+
         // initial reset may be needed on app start.
         ActivationManager.resetStateFor(this);
+    }
+
+    private void setSettingsLink() {
+        TextView link = (TextView) findViewById(R.id.settings_link);
+
+        String settingsText = getText(R.string.action_settings).toString();
+        SpannableString content = new SpannableString(settingsText);
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        link.setText(content);
+
+        link.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v){
+                showSettings();
+            }
+        });
     }
 
     @Override
@@ -71,12 +91,16 @@ public class MainActivity extends Activity {
         {
 
             case R.id.action_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                showSettings();
                 break;
 
         }
 
         return true;
+    }
+
+    private void showSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }
