@@ -6,12 +6,14 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:gravity="center">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <ImageView
             android:layout_width="128dp"
@@ -21,7 +23,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/current_service_status" />
+            android:text="@string/current_service_status"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/text_service_status"
@@ -37,7 +40,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/silent_hours_status" />
+            android:text="@string/silent_hours_status"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/text_silent_status"
