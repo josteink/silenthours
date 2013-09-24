@@ -38,19 +38,13 @@ public class MainActivity extends Activity {
     {
         setText(R.id.text_service_status, getEnabled(status.ServiceEnabled));
         setText(R.id.text_silent_status, getEnabled(status.SilentHoursEnabled));
-        setText(R.id.text_next_event, status.NextApplicationEvent.toString());
     }
 
     private String getEnabled(boolean enabled)
     {
-        if (enabled)
-        {
-            return "Enabled";
-        }
-        else
-        {
-            return "Inactive";
-        }
+        int resource = enabled ? R.string.enabled : R.string.inactive;
+        String text = getText(resource).toString();
+        return text;
     }
 
     private void setText(int control, String value)

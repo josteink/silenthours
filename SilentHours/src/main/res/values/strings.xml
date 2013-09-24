@@ -9,4 +9,9 @@
     <string name="service_stopped">Silent hours inactive.</string>
     <string name="local_service_label">Silent hours</string>
 
+    <string name="enabled">Enabled</string>
+    <string name="inactive">Inactive</string>
+
+    <string name="current_service_status">Current service status:</string>
+    <string name="silent_hours_status">Silent hours status:</string>
 </resources>

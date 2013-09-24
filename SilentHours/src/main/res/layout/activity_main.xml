@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
         <ImageView
             android:layout_width="128dp"
             android:layout_height="128dp"
@@ -22,7 +21,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current service status:" />
+            android:text="@string/current_service_status" />
 
         <TextView
             android:id="@+id/text_service_status"
@@ -38,7 +37,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Silent hours status:" />
+            android:text="@string/silent_hours_status" />
 
         <TextView
             android:id="@+id/text_silent_status"
@@ -51,16 +50,7 @@
             android:layout_height="wrap_content"
             android:text="" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Next application event:" />
 
-        <TextView
-            android:id="@+id/text_next_event"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="--set in code--" />
     </LinearLayout>
 
 </RelativeLayout>

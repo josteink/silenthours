@@ -13,8 +13,7 @@ import android.media.AudioManager;
  */
 public class ActivationManager {
 
-    private ActivationManager()
-    {
+    private ActivationManager() {
     }
 
     private static boolean _isInitialized;
@@ -26,44 +25,46 @@ public class ActivationManager {
     // We use it on Notification start, and to cancel it.
     private final static int NOTIFICATION = R.string.service_started;
 
-    private static void InitializeFor(Context context)
-    {
-        if (!_isInitialized)
-        {
-            _notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-            _alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-            _audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+    private static void InitializeFor(Context context) {
+        if (!_isInitialized) {
+            _notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            _alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            _audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             _isInitialized = true;
         }
     }
 
-    public static void resetStateFor(Context context)
-    {
-        ServiceStatus status = new ServiceStatus();
+    public static void resetStateFor(Context context) {
+        // in case we get accidentally reset from some double dispatch or something...
+        // dont lose actual data we cannot restore.
+
+        ServiceStatus status = ServiceStatusProvider.getFor(context);
+        status.SilentHoursEnabled = false;
+        // keep ringermode untouched.
         ServiceStatusProvider.setFor(context, status);
     }
 
-    public static void setStateFor(Context context)
-    {
+    public static void setStateFor(Context context) {
         InitializeFor(context);
 
         ApplicationStatus applicationStatus = ApplicationStatusProvider.getFor(context);
-        if (applicationStatus.ServiceEnabled)
-        {
+        ServiceStatus serviceStatus = ServiceStatusProvider.getFor(context);
+
+        // only queue when enable and required.
+        if (applicationStatus.ServiceEnabled
+                && !applicationStatus.NextApplicationEvent.equals(serviceStatus.LastQueuedEvent)) {
+
             // only queue new events if we are enabled.
             QueueNextAlarm(context, applicationStatus);
+
+            serviceStatus.LastQueuedEvent = applicationStatus.NextApplicationEvent;
         }
 
-        ServiceStatus serviceStatus = ServiceStatusProvider.getFor(context);
-        boolean stateModified = UpdateServiceStatus(context, applicationStatus, serviceStatus);
-        if (stateModified)
-        {
-            ServiceStatusProvider.setFor(context, serviceStatus);
-        }
+        UpdateServiceStatus(context, applicationStatus, serviceStatus);
+        ServiceStatusProvider.setFor(context, serviceStatus);
     }
 
-    private static void QueueNextAlarm(Context context, ApplicationStatus status)
-    {
+    private static void QueueNextAlarm(Context context, ApplicationStatus status) {
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -71,39 +72,37 @@ public class ActivationManager {
         _alarmManager.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
     }
 
-    private static boolean UpdateServiceStatus(Context context, ApplicationStatus appStatus, ServiceStatus srvStatus)
-    {
-        boolean stateModified = false;
-        if (appStatus.SilentHoursEnabled && !srvStatus.SilentHoursEnabled)
-        {
+    private static void UpdateServiceStatus(Context context, ApplicationStatus appStatus, ServiceStatus srvStatus) {
+        if (appStatus.SilentHoursEnabled && !srvStatus.SilentHoursEnabled) {
             enableSilentHours(srvStatus);
             showNotification(context);
-            stateModified = true;
-        }
-        else if (!appStatus.SilentHoursEnabled && srvStatus.SilentHoursEnabled)
-        {
+        } else if (!appStatus.SilentHoursEnabled && srvStatus.SilentHoursEnabled) {
             disableSilentHours(srvStatus);
             cancelNotification();
-            stateModified = true;
         }
-        return stateModified;
     }
 
-    private static void enableSilentHours(ServiceStatus srvStatus)
-    {
-        srvStatus.OriginalRingerMode = _audioManager.getRingerMode();
+    private static void enableSilentHours(ServiceStatus srvStatus) {
+        // if we retrigger our-selves, dont overwrite existing ringer-mode
+        int currentMode = _audioManager.getRingerMode();
+        if (currentMode != AudioManager.RINGER_MODE_SILENT) {
+            srvStatus.OriginalRingerMode = currentMode;
+        }
+
         _audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
         srvStatus.SilentHoursEnabled = true;
     }
 
-    private static void disableSilentHours(ServiceStatus srvStatus)
-    {
-        _audioManager.setRingerMode(srvStatus.OriginalRingerMode);
+    private static void disableSilentHours(ServiceStatus srvStatus) {
+        // only restore mode if its still in silent-mode.
+        int currentMode = _audioManager.getRingerMode();
+        if (currentMode == AudioManager.RINGER_MODE_SILENT) {
+            _audioManager.setRingerMode(srvStatus.OriginalRingerMode);
+        }
         srvStatus.SilentHoursEnabled = false;
     }
 
-    private static void showNotification(Context context)
-    {
+    private static void showNotification(Context context) {
         // In this sample, we'll use the same text for the ticker and the expanded notification
         CharSequence text = context.getText(R.string.service_started);
 
@@ -123,8 +122,7 @@ public class ActivationManager {
         _notificationManager.notify(NOTIFICATION, notification);
     }
 
-    private static void cancelNotification()
-    {
+    private static void cancelNotification() {
         _notificationManager.cancel(NOTIFICATION);
     }
 }
