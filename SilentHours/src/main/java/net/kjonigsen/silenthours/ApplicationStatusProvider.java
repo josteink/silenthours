@@ -93,7 +93,6 @@ public class ApplicationStatusProvider {
     private static ApplicationStatus getForOvernight(Date start, Date end)
     {
         // pre midnight in the future as per today
-        Date now = new Date();
         Date preMidnight = DateUtil.addDays(1,
                             DateUtil.addSeconds(-1,
                             DateUtil.getDateOnly(new Date())));
@@ -104,9 +103,7 @@ public class ApplicationStatusProvider {
         Date nextDate = new Date();
         nextDate.setTime(0);
 
-        boolean enabledDay1 =
-                (now.getTime() > start.getTime()
-                && now.getTime() < preMidnight.getTime());
+        boolean enabledDay1 = DateUtil.isPast(start) && DateUtil.isFuture(preMidnight);
         if (enabledDay1)
         {
             // we dont know if tomorrow is weekend.
@@ -116,9 +113,7 @@ public class ApplicationStatusProvider {
             nextDate = futureMidnight;
         }
 
-        boolean enabledDay2 =
-                (now.getTime() > midnight.getTime()
-                && now.getTime() < end.getTime());
+        boolean enabledDay2 = DateUtil.isPast(midnight) && DateUtil.isFuture(end);
         if (enabledDay2)
         {
             nextDate = end;
@@ -141,8 +136,7 @@ public class ApplicationStatusProvider {
     private static ApplicationStatus getForSameDay(Date start, Date end)
     {
         Date now = new Date();
-        boolean enabled = (now.getTime() > start.getTime()
-                && now.getTime() < end.getTime());
+        boolean enabled = DateUtil.isPast(start) && DateUtil.isFuture(end);
 
         ApplicationStatus result = new ApplicationStatus();
         result.ServiceEnabled = true;

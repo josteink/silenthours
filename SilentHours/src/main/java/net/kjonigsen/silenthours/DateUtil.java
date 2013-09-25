@@ -34,4 +34,16 @@ public class DateUtil {
         result.setSeconds(0);
         return result;
     }
+
+    public static boolean isPast(Date source)
+    {
+        Date now = new Date();
+        return now.getTime() > source.getTime();
+    }
+
+    public static boolean isFuture(Date source)
+    {
+        Date now = new Date();
+        return now.getTime() < source.getTime();
+    }
 }
