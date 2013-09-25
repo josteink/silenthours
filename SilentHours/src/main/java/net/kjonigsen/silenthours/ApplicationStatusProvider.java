@@ -1,8 +1,6 @@
 package net.kjonigsen.silenthours;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import java.util.Date;
 
@@ -96,16 +94,12 @@ public class ApplicationStatusProvider {
     {
         // pre midnight in the future as per today
         Date now = new Date();
-        Date preMidnight = new Date();
-        preMidnight.setHours(23);
-        preMidnight.setMinutes(59);
-        preMidnight.setSeconds(59);
+        Date preMidnight = DateUtil.addDays(1,
+                            DateUtil.addSeconds(-1,
+                            DateUtil.getDateOnly(new Date())));
 
         // midnight in the past as per today
-        Date midnight = new Date();
-        midnight.setHours(0);
-        midnight.setMinutes(0);
-        midnight.setSeconds(0);
+        Date midnight = DateUtil.getDateOnly(new Date());
 
         Date nextDate = new Date();
         nextDate.setTime(0);
@@ -117,12 +111,8 @@ public class ApplicationStatusProvider {
         {
             // we dont know if tomorrow is weekend.
             // just force status update at (future) midnight when a new day is already here.
-            long oneDay = 24 * 60 * 60 * 1000L;
-            Date futureMidnight = new Date();
-            futureMidnight.setHours(0);
-            futureMidnight.setMinutes(0);
-            futureMidnight.setSeconds(0);
-            futureMidnight.setTime(futureMidnight.getTime() + oneDay);
+            Date futureMidnight = DateUtil.addDays(1,
+                                    DateUtil.getDateOnly(new Date()));
             nextDate = futureMidnight;
         }
 
@@ -158,6 +148,12 @@ public class ApplicationStatusProvider {
         result.ServiceEnabled = true;
         result.SilentHoursEnabled = enabled;
         result.NextApplicationEvent = enabled ? end : start;
+
+        if (result.NextApplicationEvent.getTime() < now.getTime())
+        {
+            // we should queue up for this time -tomorrow-
+            result.NextApplicationEvent = DateUtil.addDays(1, result.NextApplicationEvent);
+        }
 
         return result;
     }

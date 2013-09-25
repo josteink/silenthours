@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 
+import java.util.Date;
+
 /**
  * Created by jostein on 23/09/13.
  */
@@ -36,10 +38,12 @@ public class ActivationManager {
 
     public static void resetStateFor(Context context) {
         // in case we get accidentally reset from some double dispatch or something...
-        // dont lose actual data we cannot restore.
+        // manually reset all fields we want to reset to avoid
+        // losing actual data we cannot restore.
 
         ServiceStatus status = ServiceStatusProvider.getFor(context);
         status.SilentHoursEnabled = false;
+        status.LastQueuedEvent = new Date(0);
         // keep ringermode untouched.
         ServiceStatusProvider.setFor(context, status);
     }
@@ -50,10 +54,10 @@ public class ActivationManager {
         ApplicationStatus applicationStatus = ApplicationStatusProvider.getFor(context);
         ServiceStatus serviceStatus = ServiceStatusProvider.getFor(context);
 
-        boolean alreadyQueued = applicationStatus.NextApplicationEvent.getTime() > serviceStatus.LastQueuedEvent.getTime();
+        boolean newAlarmRequired = getIsNewAlarmRequired(applicationStatus, serviceStatus);
 
         // only queue when enable and required.
-        if (applicationStatus.ServiceEnabled && !alreadyQueued) {
+        if (applicationStatus.ServiceEnabled && newAlarmRequired) {
 
             // only queue new events if we are enabled.
             QueueNextAlarm(context, applicationStatus);
@@ -63,6 +67,23 @@ public class ActivationManager {
 
         UpdateServiceStatus(context, applicationStatus, serviceStatus);
         ServiceStatusProvider.setFor(context, serviceStatus);
+    }
+
+    private static boolean getIsNewAlarmRequired(ApplicationStatus applicationStatus, ServiceStatus serviceStatus)
+    {
+        Date now = new Date();
+        if (now.getTime() > serviceStatus.LastQueuedEvent.getTime())
+        {
+            return true;
+        }
+        else if (applicationStatus.NextApplicationEvent.getTime() < serviceStatus.LastQueuedEvent.getTime())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private static void QueueNextAlarm(Context context, ApplicationStatus status) {
