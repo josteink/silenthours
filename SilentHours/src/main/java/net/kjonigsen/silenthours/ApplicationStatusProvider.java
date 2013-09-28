@@ -29,91 +29,90 @@ public class ApplicationStatusProvider {
         }
         else
         {
-            return getFor(prefs);
+            Date now = new Date();
+            return getFor(prefs, now);
         }
     }
 
-    private static ApplicationStatus getFor(ApplicationPreferences prefs)
+    private static ApplicationStatus getFor(ApplicationPreferences prefs, Date now)
     {
         switch (prefs.OperationMode)
         {
             case ApplicationPreferences.OM_AllDaysWeekdays:
-                return getForWeekday(prefs);
+                return getForWeekday(prefs, now);
 
             case ApplicationPreferences.OM_AllDaysWeekends:
-                return getForWeekend(prefs);
+                return getForWeekend(prefs, now);
 
             default:
-                return getForCurrent(prefs);
+                return getForCurrent(prefs, now);
         }
     }
 
-    private static ApplicationStatus getForCurrent(ApplicationPreferences prefs)
+    private static ApplicationStatus getForCurrent(ApplicationPreferences prefs, Date now)
     {
-        if (isWeekday())
+        if (DateUtil.isWeekday(now))
         {
-            return getForWeekday(prefs);
+            return getForWeekday(prefs, now);
         }
         else
         {
-            return getForWeekend(prefs);
+            return getForWeekend(prefs, now);
         }
     }
 
-    private static boolean isWeekday()
+    private static ApplicationStatus getForWeekday(ApplicationPreferences prefs, Date now)
     {
-        Date now = new Date();
-        int dayOfWeek = now.getDay();
-
-        return (dayOfWeek > 0) && (dayOfWeek < 6);
+        return getFor(prefs, now, prefs.WeekdayStartTime, prefs.WeekdayStopTime);
     }
 
-    private static ApplicationStatus getForWeekday(ApplicationPreferences prefs)
+    private static ApplicationStatus getForWeekend(ApplicationPreferences prefs, Date now)
     {
-        return getFor(prefs.WeekdayStartTime, prefs.WeekdayStopTime);
+        return getFor(prefs, now, prefs.WeekendStartTime, prefs.WeekendStopTime);
     }
 
-    private static ApplicationStatus getForWeekend(ApplicationPreferences prefs)
+    private static ApplicationStatus getFor(ApplicationPreferences prefs, Date now, Date start, Date end)
     {
-        return getFor(prefs.WeekendStartTime, prefs.WeekendStopTime);
-    }
+        // dates instances normalized to match our now-instance's date-property, while maintainin their time-values.
+        Date startNow = DateUtil.changeDate(start, now);
+        Date endNow = DateUtil.changeDate(end, now);
 
-    private static ApplicationStatus getFor(Date start, Date end)
-    {
         if (start.getTime() > end.getTime())
         {
-            return getForOvernight(start, end);
+            return getForOvernight(prefs, now, startNow, endNow);
         }
         else
         {
-            return getForSameDay(start, end);
+            return getForSameDay(prefs, now, startNow, endNow);
         }
     }
 
-    private static ApplicationStatus getForOvernight(Date start, Date end)
+    private static ApplicationStatus getForOvernight(ApplicationPreferences prefs, Date now, Date start, Date end)
     {
         // pre midnight in the future as per today
         Date preMidnight = DateUtil.addDays(1,
                             DateUtil.addSeconds(-1,
-                            DateUtil.getDateOnly(new Date())));
+                            DateUtil.getDateOnly(now)));
 
         // midnight in the past as per today
-        Date midnight = DateUtil.getDateOnly(new Date());
+        Date midnight = DateUtil.getDateOnly(now);
 
         Date nextDate = new Date();
         nextDate.setTime(0);
 
-        boolean enabledDay1 = DateUtil.isPast(start) && DateUtil.isFuture(preMidnight);
+        boolean enabledDay1 = DateUtil.isPast(start, now) && DateUtil.isFuture(preMidnight, now);
         if (enabledDay1)
         {
             // we dont know if tomorrow is weekend.
-            // just force status update at (future) midnight when a new day is already here.
-            Date futureMidnight = DateUtil.addDays(1,
-                                    DateUtil.getDateOnly(new Date()));
-            nextDate = futureMidnight;
+            // create a tomorrow-date and recurse.
+            Date tomorrow = DateUtil.addDays(1,
+                            DateUtil.getDateOnly(now));
+
+            ApplicationStatus futureStatus = getFor(prefs, tomorrow);
+            nextDate = futureStatus.NextApplicationEvent;
         }
 
-        boolean enabledDay2 = DateUtil.isPast(midnight) && DateUtil.isFuture(end);
+        boolean enabledDay2 = DateUtil.isPast(midnight, now) && DateUtil.isFuture(end, now);
         if (enabledDay2)
         {
             nextDate = end;
@@ -133,17 +132,16 @@ public class ApplicationStatusProvider {
         return result;
     }
 
-    private static ApplicationStatus getForSameDay(Date start, Date end)
+    private static ApplicationStatus getForSameDay(ApplicationPreferences prefs, Date now, Date start, Date end)
     {
-        Date now = new Date();
-        boolean enabled = DateUtil.isPast(start) && DateUtil.isFuture(end);
+        boolean enabled = DateUtil.isPast(start, now) && DateUtil.isFuture(end, now);
 
         ApplicationStatus result = new ApplicationStatus();
         result.ServiceEnabled = true;
         result.SilentHoursEnabled = enabled;
         result.NextApplicationEvent = enabled ? end : start;
 
-        if (result.NextApplicationEvent.getTime() < now.getTime())
+        if (DateUtil.isPast(result.NextApplicationEvent, now))
         {
             // we should queue up for this time -tomorrow-
             result.NextApplicationEvent = DateUtil.addDays(1, result.NextApplicationEvent);

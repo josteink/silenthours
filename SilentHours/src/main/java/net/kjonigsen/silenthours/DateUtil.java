@@ -22,7 +22,7 @@ public class DateUtil {
     public static Date addSeconds(int seconds, Date source)
     {
         Date result = new Date();
-        result.setTime(source.getTime() - DU_Second * seconds);
+        result.setTime(source.getTime() + DU_Second * seconds);
         return result;
     }
 
@@ -38,12 +38,52 @@ public class DateUtil {
     public static boolean isPast(Date source)
     {
         Date now = new Date();
-        return now.getTime() > source.getTime();
+        return isPast(source, now);
+    }
+
+    public static boolean isPast(Date source, Date now)
+    {
+        Date sourceClean = eraseMillis(source);
+        Date nowClean = eraseMillis(now);
+        // "now" will be past very, very soon.
+        return nowClean.getTime() >= sourceClean.getTime();
     }
 
     public static boolean isFuture(Date source)
     {
         Date now = new Date();
-        return now.getTime() < source.getTime();
+        return isFuture(source, now);
     }
+
+    public static boolean isFuture(Date source, Date now)
+    {
+        Date sourceClean = eraseMillis(source);
+        Date nowClean = eraseMillis(now);
+        return nowClean.getTime() < sourceClean.getTime();
+    }
+
+    public static boolean isWeekday(Date source)
+    {
+        int dayOfWeek = source.getDay();
+        return (dayOfWeek > 0) && (dayOfWeek < 6);
+    }
+
+    public static Date changeDate(Date timeSource, Date dateSource)
+    {
+        Date result = new Date(timeSource.getTime());
+
+        result.setYear(dateSource.getYear());
+        result.setMonth(dateSource.getMonth());
+        result.setDate(dateSource.getDate());
+
+        return result;
+    }
+
+    public static Date eraseMillis(Date source)
+    {
+        long millis = (source.getTime()/1000)*1000;
+        Date result = new Date(millis);
+        return result;
+    }
+
 }

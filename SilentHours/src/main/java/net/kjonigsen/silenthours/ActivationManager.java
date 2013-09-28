@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.Trace;
+import android.util.Log;
 
 import java.util.Date;
 
@@ -42,9 +44,7 @@ public class ActivationManager {
         // losing actual data we cannot restore.
 
         ServiceStatus status = ServiceStatusProvider.getFor(context);
-        status.SilentHoursEnabled = false;
-        status.LastQueuedEvent = new Date(0);
-        // keep ringermode untouched.
+        status.SafeReset();
         ServiceStatusProvider.setFor(context, status);
     }
 
@@ -52,16 +52,20 @@ public class ActivationManager {
         InitializeFor(context);
 
         ApplicationStatus applicationStatus = ApplicationStatusProvider.getFor(context);
-        ServiceStatus serviceStatus = ServiceStatusProvider.getFor(context);
+        if (!applicationStatus.ServiceEnabled)
+        {
+            // don't waste resources if we're not supposed to do anything.
+            return;
+        }
 
+        ServiceStatus serviceStatus = ServiceStatusProvider.getFor(context);
         boolean newAlarmRequired = getIsNewAlarmRequired(applicationStatus, serviceStatus);
 
         // only queue when enable and required.
-        if (applicationStatus.ServiceEnabled && newAlarmRequired) {
+        if (newAlarmRequired) {
 
             // only queue new events if we are enabled.
             QueueNextAlarm(context, applicationStatus);
-
             serviceStatus.LastQueuedEvent = applicationStatus.NextApplicationEvent;
         }
 
@@ -72,11 +76,11 @@ public class ActivationManager {
     private static boolean getIsNewAlarmRequired(ApplicationStatus applicationStatus, ServiceStatus serviceStatus)
     {
         Date now = new Date();
-        if (now.getTime() > serviceStatus.LastQueuedEvent.getTime())
+        if (DateUtil.isPast(serviceStatus.LastQueuedEvent, now))
         {
             return true;
         }
-        else if (applicationStatus.NextApplicationEvent.getTime() < serviceStatus.LastQueuedEvent.getTime())
+        else if (DateUtil.isPast(applicationStatus.NextApplicationEvent, serviceStatus.LastQueuedEvent))
         {
             return true;
         }
@@ -90,8 +94,18 @@ public class ActivationManager {
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        long millis = status.NextApplicationEvent.getTime();
-        _alarmManager.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
+        // sanity-check.
+        // alarms queued in the past triggers immediately, causing an endless loop.
+        boolean isPast = DateUtil.isPast(status.NextApplicationEvent);
+        if (!isPast)
+        {
+            long millis = status.NextApplicationEvent.getTime();
+            _alarmManager.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
+        }
+        else
+        {
+            Log.e("net.kjonigsen.silenthours", "Alarm set to be scheduled, but date is in the past!");
+        }
     }
 
     private static void UpdateServiceStatus(Context context, ApplicationStatus appStatus, ServiceStatus srvStatus) {
