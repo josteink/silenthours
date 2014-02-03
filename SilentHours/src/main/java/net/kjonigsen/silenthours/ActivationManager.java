@@ -49,10 +49,14 @@ public class ActivationManager {
     }
 
     public static void setStateFor(Context context) {
+        setStateFor(context, false);
+    }
+
+    public static void setStateFor(Context context, Boolean forceUpdate) {
         InitializeFor(context);
 
         ApplicationStatus applicationStatus = ApplicationStatusProvider.getFor(context);
-        if (!applicationStatus.ServiceEnabled)
+        if (!forceUpdate && !applicationStatus.ServiceEnabled)
         {
             // don't waste resources if we're not supposed to do anything.
             return;
@@ -62,7 +66,7 @@ public class ActivationManager {
         boolean newAlarmRequired = getIsNewAlarmRequired(applicationStatus, serviceStatus);
 
         // only queue when enable and required.
-        if (newAlarmRequired) {
+        if (forceUpdate || newAlarmRequired) {
 
             // only queue new events if we are enabled.
             QueueNextAlarm(context, applicationStatus);
